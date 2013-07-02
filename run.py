@@ -6,7 +6,7 @@
 
 # Read in time initializations
 
-loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name = init.test1()
+loc,nsteps,ndays,ff,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name = init.parameters()
 
 # Loop through start locations and times for running different simulations
 for test in xrange(tests):

@@ -12,7 +12,7 @@ from matplotlib.mlab import *
 import inout
 import tools
 
-def parameters(loc,nsteps,ndays,ff,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name):
+def parameters(loc,nsteps,ndays,ff,tseas,ah,av,z0,zpar,do3d,doturb):
 	'''
 	Parameters for running numerical simulation.
 	loc 	Path to directory of grid and output files
@@ -29,8 +29,6 @@ def parameters(loc,nsteps,ndays,ff,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,nam
 			doturb=1 means adding parameterized turbulence
 			doturb=2 means adding diffusion on a circle
 			doturb=3 means adding diffusion on an ellipse (anisodiffusion)
-	lon0 	Drifter starting locations in x/zonal direction.
-	lat0 	Drifter starting locations in y/meridional direction.
 	z0/zpar For 3D drifter movement, turn off twodim flag in makefile.
 			Then z0 should be an array of initial drifter depths. 
 			The array should be the same size as lon0 and be negative
@@ -60,24 +58,6 @@ def parameters(loc,nsteps,ndays,ff,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,nam
 	yp 		y-locations in x,y coordinates for drifters
 	zp 		z-locations (depths from mean sea level) for drifters
 	t 		time for drifter tracks
-	name	Name of simulation to be used for netcdf file containing final tracks
-	'''
-
-def locations():
-
-def dates():
-	'''
-	date 	Start date in datetime object
-	'''
-
-def test1():
-	'''
-	A drifter test using TXLA model output. 
-	The comparison case for this simulation is 2D (do3d=0) 
-	with no turbulence/diffusion (doturb=0).
-	Drifters are started at the surface and run forward
-	for ten days (ndays=10) from 11/25/09 (in date). Compare results with figure in examples/test1.png.
-
 	'''
 
 	# Location of TXLA model output
@@ -97,8 +77,6 @@ def test1():
 	nsteps = 5
 	ndays = 1 #16
 	ff = 1
-	# Start date
-	date = datetime(2009,11, 25, 0)
 	# date = datetime(2009,11, 20, 0)
 
 	# Time between outputs
@@ -112,22 +90,6 @@ def test1():
 	# latr = grid.variables['lat_rho'][:]
 	grid = inout.readgrid(loc)
 
-	## Input starting locations as real space lon,lat locations
-	# lon0,lat0 = np.meshgrid(-95.498218005315309,23.142258627126882) # [0,0] (SE) corner
-	# lon0,lat0 = np.meshgrid(-97.748582291691989,23.000027311710628) # [-1,0] (SW) corner
-	# lon0,lat0 = np.meshgrid(-87.757124031927574,29.235771320764623) # [0,-1] (NE) corner
-	# lon0,lat0 = np.meshgrid(-88.3634073986196,30.388542615201313) # [-1,-1] (NW) corner
-	# lon0,lat0 = np.meshgrid(np.linspace(-94,-93,10),np.linspace(28,29,10)) # grid outside Galveston Bay
-	# lon0,lat0 = np.meshgrid(np.linspace(-95,-91,100),np.linspace(28,29,50)) # rectangle outside Galveston
-
-	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,1100),np.linspace(22.5,31,980)) # whole domain, 1 km
-	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,220),np.linspace(22.5,31,196)) # whole domain, 5 km
-	# FOR TEST1:
-	lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,110),np.linspace(22.5,31,98)) # whole domain, 10 km
-	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,21),np.linspace(22.5,31,20)) # whole domain, 50 km
-
-	# Eliminate points that are outside domain or in masked areas
-	lon0,lat0 = tools.check_points(lon0,lat0,grid)
 
 	## Choose method for vertical placement of drifters
 	# Also update makefile accordingly. Choose the twodim flag for isoslice.
@@ -156,3 +118,161 @@ def test1():
 	# 		z0=z0,zpar=zpar,do3d=do3d,doturb=doturb,name=name)
 
 	return loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name
+
+
+def locations():
+	'''
+	lon0 	Drifter starting locations in x/zonal direction.
+	lat0 	Drifter starting locations in y/meridional direction.
+	name	Name of simulation to be used for netcdf file containing final tracks
+	'''
+
+	## Input starting locations as real space lon,lat locations
+	# lon0,lat0 = np.meshgrid(-95.498218005315309,23.142258627126882) # [0,0] (SE) corner
+	# lon0,lat0 = np.meshgrid(-97.748582291691989,23.000027311710628) # [-1,0] (SW) corner
+	# lon0,lat0 = np.meshgrid(-87.757124031927574,29.235771320764623) # [0,-1] (NE) corner
+	# lon0,lat0 = np.meshgrid(-88.3634073986196,30.388542615201313) # [-1,-1] (NW) corner
+	# lon0,lat0 = np.meshgrid(np.linspace(-94,-93,10),np.linspace(28,29,10)) # grid outside Galveston Bay
+	# lon0,lat0 = np.meshgrid(np.linspace(-95,-91,100),np.linspace(28,29,50)) # rectangle outside Galveston
+
+	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,1100),np.linspace(22.5,31,980)) # whole domain, 1 km
+	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,220),np.linspace(22.5,31,196)) # whole domain, 5 km
+	# FOR TEST1:
+	lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,110),np.linspace(22.5,31,98)) # whole domain, 10 km
+	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,21),np.linspace(22.5,31,20)) # whole domain, 50 km
+
+	# Eliminate points that are outside domain or in masked areas
+	lon0,lat0 = tools.check_points(lon0,lat0,grid)
+
+	name = list((
+			'Matagorda Island, TX',
+			'Padre Island National Seashore, TX',
+			'Matagorda Island, TX',
+			'In Gulf of Mexico',
+			'Mustang Island, TX',
+			'Padre Island National Seashore, TX',
+			'South Padre Island, TX',
+			'Padre Island National Seashore, TX',
+			'Padre Island National Seashore, TX',
+			'Mustang Island, TX',		
+			'Padre Island National Seashore, TX',
+			'Padre Island National Seashore, TX',
+			'Ship Island, MS',
+			'Gilchrist Beach, TX',
+			'Galveston Beach, Galveston, TX',
+			'Galveston Beach, Galveston, TX',
+			'Crystal Beach, TX',
+			'Mud Lake, TX',
+			'Galveston Beach, Galveston, TX',
+			'High Island, TX',
+			'Galveston Seawall, Galveston, TX',
+			'Crystal Beach, TX',
+			'McFadden Beach, TX',
+			'Sabine Pass Jetties, TX',
+			'Padre Island, TX',
+			'McFaddin Beach, Sabine Pass, TX',	
+			'McFaddin Beach, Sabine Pass, TX',		
+			'Galveston Beach, Galveston, TX',
+			'Texas Point, Sabine Pass, TX',
+			'Texas Point, Sabine Pass, TX',
+			'Sabine Pass, TX',
+			'Sabine Pass, TX',
+			'Sea Rim State Park, Sabine Pass, TX',
+			'Sea Rim State Park, Sabine Pass, TX',
+			'Pirates Beach, Galveston, TX',
+			'Bolivar Peninsula, TX',
+			'GOM, 3 miles south of Destin, FL',
+			'Cameron, LA',
+			'Cameron, LA',
+			'Cameron, LA'))
+
+	lat =  28°10'8.03"N
+	27°25'26.96"N
+	28°10'8.03"N
+	np.nan
+	 27°44'21.98"N
+	27°25'26.96"N
+	 26° 6'42.62"N
+	27°25'26.96"N
+	27°25'26.96"N
+	 27°44'21.98"N
+	27°25'26.96"N
+	27°25'26.96"N
+	 30°12'40.09"N
+	 np.nan
+	  29°16'16.79"N
+	  29°16'16.79"N
+	  29°27'25.82"N
+	   29°32'33.32"N
+	  29°16'16.79"N
+	  29°34'0.83"N
+	  29°18'8.85"N
+	  29°27'25.82"N
+	  29°39'24.04"N
+	  29°41'40.00"N
+	   27°15'49.24"N
+	  29°39'24.04"N
+	  29°39'24.04"N
+	  29°16'16.79"N
+	  29°41'3.88"N
+	  29°41'3.88"N
+	  29°41'3.88"N
+	  29°41'3.88"N
+	  29°41'12.84"N
+	  29°41'12.84"N
+	  29°12'15.35"N
+	  29°28'41.84"N
+	  np.nan
+	  29°47'51.80"N
+	  29°47'51.80"N
+	  29°47'51.80"N
+
+	lon =  96°44'19.30"W
+	 97°17'57.06"W
+	 96°44'19.30"W
+	 np.nan
+	  97° 7'54.01"W
+	 97°17'57.06"W
+	  97°10'5.25"W
+	 97°17'57.06"W
+	 97°17'57.06"W
+	  97° 7'54.01"W
+	 97°17'57.06"W
+	 97°17'57.06"W
+	  88°57'50.85"W
+	  np.nan
+	  94°49'25.87"W
+	  94°49'25.87"W
+	   94°38'22.71"W
+	    95° 0'56.82"W
+	  94°49'25.87"W
+	  94°23'36.68"W
+	   94°46'27.70"W
+	   94°38'22.71"W
+	   94° 6'20.05"W
+	   93°51'9.07"W
+	   97°21'49.13"W
+	   94° 6'20.05"W
+	   94° 6'20.05"W
+	   94°49'25.87"W
+	   93°51'2.66"W
+	   93°51'2.66"W
+	   93°51'2.66"W
+	   93°51'2.66"W
+	   94° 2'38.40"W
+	   94° 2'38.40"W
+	   94°56'10.69"W
+	   94°34'47.69"W
+	   np.nan
+	   93°19'30.16"W
+	   93°19'30.16"W
+	   93°19'30.16"W
+
+def dates():
+	'''
+	date 	Start date in datetime object
+	'''
+
+	# Start date
+	date = datetime(2009,11, 25, 0)
+
