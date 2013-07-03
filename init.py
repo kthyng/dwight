@@ -9,6 +9,7 @@ import pdb
 import glob
 from datetime import datetime, timedelta
 from matplotlib.mlab import *
+import tracpy
 
 
 def parameters():
@@ -64,26 +65,30 @@ def parameters():
 	# 0150 file goes from (2009, 11, 19, 12, 0) to (2009, 12, 6, 0, 0)
 	# loc = ['http://barataria.tamu.edu:8080/thredds/dodsC/txla_nesting6/', \
 	# 		'http://barataria.tamu.edu:8080//thredds/dodsC/txla_nesting6_grid/txla_grd_v4_new.nc']
-	loc = ['http://barataria.tamu.edu:8080/thredds/dodsC/txla_nesting6/ocean_his_0150.nc', \
-			'http://barataria.tamu.edu:8080//thredds/dodsC/txla_nesting6_grid/txla_grd_v4_new.nc']
+	# loc = ['http://barataria.tamu.edu:8080/thredds/dodsC/txla_nesting6/ocean_his_0150.nc', \
+	# 		'http://barataria.tamu.edu:8080//thredds/dodsC/txla_nesting6_grid/txla_grd_v4_new.nc']
 	# # Location of TXLA model output
-	# if 'rainier' in os.uname():
-	# 	loc = '/Users/kthyng/Documents/research/postdoc/' # for model outputs
-	# elif 'hafen.tamu.edu' in os.uname():
-	# 	loc = '/home/kthyng/shelf/' # for model outputs
+	if 'rainier' in os.uname():
+		loc = '/Users/kthyng/Documents/research/postdoc/' # for model outputs
+	elif 'hafen.tamu.edu' in os.uname():
+		loc = '/home/kthyng/shelf/' # for model outputs
 
 	# Initialize parameters
 	nsteps = 5
 	ndays = 1 #16
-	ff = 1
+	ff = -1
 	# date = datetime(2009,11, 20, 0)
+
 
 	# Time between outputs
 	# Dt = 14400. # in seconds (4 hours), nc.variables['dt'][:] 
 	tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
 	ah = 5. #100.
 	av = 1.e-5 # m^2/s, or try 5e-6
-=
+
+	# Number of model outputs to use
+	tout = np.int((ndays*(24*3600))/tseas)
+
 	## Choose method for vertical placement of drifters
 	# Also update makefile accordingly. Choose the twodim flag for isoslice.
 	# See above for more notes, but do the following two lines for an isoslice
@@ -102,10 +107,10 @@ def parameters():
 	# doturb=3 means adding diffusion on an ellipse (anisodiffusion)
 	doturb = 0
 
-	return loc,nsteps,ndays,ff,tseas,ah,av,z0,zpar,do3d,doturb
+	return loc,nsteps,ndays,ff,tseas,ah,av,z0,zpar,do3d,doturb,tout
 
 
-def locations(test):
+def locations(test,grid):
 	'''
 	Contains the locations and name information for the simulations.
 
@@ -250,7 +255,7 @@ def locations(test):
 							np.linspace(lat[test]+0.1, lat[test]+0.1,30))
 
 	# Eliminate points that are outside domain or in masked areas
-	lon0,lat0 = tools.check_points(lon0,lat0,grid)
+	lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
 	return lon0, lat0, name[test]
 
