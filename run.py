@@ -68,8 +68,9 @@ for test in xrange(ntests):
 
 	# pdb.set_trace()
 	ln = lonp.shape[1]
-	lonpsave[ln*test:ln*test+ln] = lonp[-1,:]
-	latpsave[ln*test:ln*test+ln] = latp[-1,:]
+	# Save final locations of drifters for summary origin plots
+	lonptemp, \
+		latptemp = tracpy.tools.find_final(lonp, latp)
 
 	# Plot tracks
 	# pdb.set_trace()
