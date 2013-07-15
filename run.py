@@ -10,7 +10,6 @@ from matplotlib import delaunay
 from matplotlib.pyplot import *
 import glob
 from datetime import datetime, timedelta
-from mpl_toolkits.basemap import Basemap
 import time
 import tracpy
 import init
@@ -26,8 +25,8 @@ loc, nsteps, ndays, ff, tseas, ah, av, z0, zpar, do3d, doturb, tout = init.param
 
 # Get the first nc object to initialize grid
 # Read in time initializations
-date = datetime(2009,12,2,0)
-# date = init.start_times(0)
+# date = datetime(2009,12,2,0)
+date = init.start_times(0)
 # Convert date to number
 date = netCDF.date2num(date,units)
 # Figure out what files will be used for this tracking
@@ -41,56 +40,43 @@ latpsave = np.ones(40*900)*np.nan
 # Loop through start locations and times for running different simulations
 for test in xrange(ntests):
 
-	# Read in location initializations
-	lon0, lat0, name = init.locations(test,grid)
+    # Read in location initializations
+    lon0, lat0, name = init.locations(test,grid)
 
-	# Read in time initializations
-	# date = init.start_times(test)
+    # Read in time initializations
+    date = init.start_times(test)
+    # date = datetime(2009,12,2,0)
 
-	date = datetime(2009,12,2,0)
+    # pdb.set_trace()
 
-	# pdb.set_trace()
+    # Add information to name
+    name = str(test) + '-' + str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2) + '-' + name
 
-	# Add information to name
-	name = str(test) + '-' + str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2) + '-' + name
+    # If the particle trajectories have not been run, run them
+    if not os.path.exists('tracks/' + name + '.nc'):
+        # TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
+        lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, date, \
+                                        tseas, ah, av, lon0, lat0, \
+                                        z0, zpar, do3d, doturb, name)
 
-	# If the particle trajectories have not been run, run them
-	if not os.path.exists('tracks/' + name + '.nc'):
-		# TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
-		lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, date, \
-										tseas, ah, av, lon0, lat0, \
-										z0, zpar, do3d, doturb, name)
+    else: # if the files already exist, just read them in for plotting
+        d = netCDF.Dataset('tracks/' + name + '.nc')
+        lonp = d.variables['lonp'][:]
+        latp = d.variables['latp'][:]
 
-	else: # if the files already exist, just read them in for plotting
-		d = netCDF.Dataset('tracks/' + name + '.nc')
-		lonp = d.variables['lonp'][:]
-		latp = d.variables['latp'][:]
-
-	# pdb.set_trace()
-	ln = lonp.shape[1]
-	# Save final locations of drifters for summary origin plots
-	lonptemp, \
-		latptemp = tracpy.tools.find_final(lonp, latp)
-
-	# Plot tracks
-	# pdb.set_trace()
-	# tracpy.plotting.tracks(lonp,latp,name,grid=grid)
-
-	# Plot final location (by time index) histogram
-	# tracpy.plotting.hist(lonp,latp,name,grid=grid,which='contour')
-	# xmin, ymin = grid['basemap'](lonp.min()-.1, latp.min()+.1)
-	# xmax, ymax = grid['basemap'](lonp.max()+.1, latp.max()+.1)
-	# tracpy.plotting.hist(lonp,latp,name,grid=grid, \
-	# 						which='pcolor',bins=(80,80), \
-	# 						xlims=[xmin, xmax], \
-	# 						ylims=[ymin, ymax])	
-
-	# pdb.set_trace()
-	# ADD ABILITY TO JUST READ IN TRACKS IF ALREADY DONE
+    # If the particle trajectories have not been plotted, plot them
+    if not os.path.exists('figures/' + name + 'tracks.png'):
+        tracpy.plotting.tracks(lonp, latp, name, grid=grid)
+    if not os.path.exists('figures/' + name + 'histhexbin.png'):
+        tracpy.plotting.hist(lonp, latp, name, grid=grid, \
+                            which='hexbin')
 
 # pdb.set_trace()
 # Make histogram of all final locations
-tracpy.plotting.hist(lonpsave,latpsave,name,grid=grid,tind='vector', \
-							which='pcolor',bins=(80,80))
+d = netCDF.MFDataset('tracks/dwight/*')
+name = 'overall'
+tracpy.plotting.hist(d.variables['lonp'][:],d.variables['lonp'][:],name,grid=grid,tind='vector', \
+                            which='pcolor',bins=(80,80))
 
 # Compile tex document with figures in it
+# !pdflatex dwight.tex
