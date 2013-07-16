@@ -152,7 +152,7 @@ def locations(test,grid):
             'Sea Rim State Park, Sabine Pass, TX',
             'Pirates Beach, Galveston, TX',
             'Bolivar Peninsula, TX',
-            'GOM, 3 miles south of Destin, FL',
+            # 'GOM, 3 miles south of Destin, FL',
             'Cameron, LA',
             'Cameron, LA',
             'Cameron, LA'))
@@ -194,7 +194,7 @@ def locations(test,grid):
                     29 + 40.9/60.,
                     29 + 12/60. + 9/3600.,
                     29 + 29/60. + 31/3600.,
-                    30 + 20/60. + 0/3600.,
+                    # 30 + 20/60. + 0/3600.,
                     29 + 44/60. + 48/3600.,
                     29 + 44/60. + 42/3600.,
                     29 + 45/60. + 49/3600.])
@@ -236,7 +236,7 @@ def locations(test,grid):
                     93 + 59.29/60.,
                     94 + 56/60. + 8/3600.,
                     94 + 32/60. + 19/3600.,
-                    86 + 30/60. + 0/3600.,
+                    # 86 + 30/60. + 0/3600.,
                     93 + 40/60. + 50/3600.,
                     93 + 41/60. + 31/3600.,
                     93 + 21/60. + 38/3600.])

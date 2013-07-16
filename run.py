@@ -15,7 +15,7 @@ import tracpy
 import init
 from scipy import ndimage
 
-ntests = 40 # number of packages found
+ntests = 39 # number of packages found
 
 # Units for time conversion with netCDF.num2date and .date2num
 units = 'seconds since 1970-01-01'
