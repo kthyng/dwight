@@ -75,8 +75,8 @@ for test in xrange(ntests):
 # Make histogram of all final locations
 d = netCDF.MFDataset('tracks/*',aggdim='ntrac')
 name = 'overall'
-tracpy.plotting.hist(d.variables['lonp'][:],d.variables['lonp'][:],name,grid=grid,tind='vector', \
-                            which='pcolor',bins=(80,80))
+tracpy.plotting.hist(d.variables['lonp'][:],d.variables['lonp'][:], \
+                    name, grid=grid, which='hexbin')
 
 # Compile tex document with figures in it
 # !pdflatex dwight.tex
