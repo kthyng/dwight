@@ -62,7 +62,7 @@ def parameters():
 
     # Location of TXLA forecast model output file and then grid. 
     loc = ['/pong/raid/kthyng/forecast/txla_oof_his_jan_jul_2013.nc', \
-            '/home/kthyng/shelf/grid.nc']
+            '/atch/raid1/zhangxq/Projects/txla_nesting/txla_grd_v4_new.nc']
 
     # Initialize parameters
     nsteps = 5
