@@ -73,7 +73,7 @@ for test in xrange(ntests):
 
 # pdb.set_trace()
 # Make histogram of all final locations
-d = netCDF.MFDataset('tracks/dwight/*')
+d = netCDF.MFDataset('tracks/dwight/*',aggdim='ntrac')
 name = 'overall'
 tracpy.plotting.hist(d.variables['lonp'][:],d.variables['lonp'][:],name,grid=grid,tind='vector', \
                             which='pcolor',bins=(80,80))
