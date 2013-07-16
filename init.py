@@ -60,18 +60,8 @@ def parameters():
     t       time for drifter tracks
     '''
 
-    # Location of TXLA model output
-    # file and then grid. 
-    # 0150 file goes from (2009, 11, 19, 12, 0) to (2009, 12, 6, 0, 0)
-    # loc = ['http://barataria.tamu.edu:8080/thredds/dodsC/txla_nesting6/', \
-    #       'http://barataria.tamu.edu:8080//thredds/dodsC/txla_nesting6_grid/txla_grd_v4_new.nc']
-    # loc = ['http://barataria.tamu.edu:8080/thredds/dodsC/txla_nesting6/ocean_his_0150.nc', \
-    #       'http://barataria.tamu.edu:8080//thredds/dodsC/txla_nesting6_grid/txla_grd_v4_new.nc']
-    # # Location of TXLA model output
-    if 'rainier' in os.uname():
-        loc = '/Users/kthyng/Documents/research/postdoc/' # for model outputs
-    elif 'hafen.tamu.edu' in os.uname():
-        loc = '/home/kthyng/shelf/' # for model outputs
+    # Location of TXLA forecast model output file and then grid. 
+    loc = '/pong/raid/kthyng/forecast' #/txla_oof_his_jan_jul_2013.nc'
 
     # Initialize parameters
     nsteps = 5
