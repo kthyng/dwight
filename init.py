@@ -74,7 +74,7 @@ def parameters():
     # Time between outputs
     # Dt = 14400. # in seconds (4 hours), nc.variables['dt'][:] 
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-    ah = 5. #100.
+    ah = 20. #100.
     av = 1.e-5 # m^2/s, or try 5e-6
 
     # Number of model outputs to use
@@ -96,7 +96,7 @@ def parameters():
     # doturb=1 means adding parameterized turbulence
     # doturb=2 means adding diffusion on a circle
     # doturb=3 means adding diffusion on an ellipse (anisodiffusion)
-    doturb = 0
+    doturb = 2
 
     return loc,nsteps,ndays,ff,tseas,ah,av,z0,zpar,do3d,doturb,tout
 
@@ -266,45 +266,45 @@ def start_times(test):
         date    Start date for test in datetime object
     '''
 
-    dates = np.array([datetime(2013, 1, 11, 0),
-                    datetime(2013, 1, 16, 0),
-                    datetime(2013, 1, 18, 0),
-                    datetime(2013, 1, 25, 0),
-                    datetime(2013, 1, 29, 0),
-                    datetime(2013, 2, 10, 0),
-                    datetime(2013, 4, 10, 0),
-                    datetime(2013, 4, 13, 0),
-                    datetime(2013, 4, 23, 0),
-                    datetime(2013, 4, 30, 0),
-                    datetime(2013, 5, 7, 0),
-                    datetime(2013, 5, 7, 0),
-                    datetime(2013, 5, 12, 0),
-                    datetime(2013, 5, 19, 0),
-                    datetime(2013, 5, 24, 0),
-                    datetime(2013, 5, 26, 0),
-                    datetime(2013, 5, 26, 0),
-                    datetime(2013, 5, 28, 0),
-                    datetime(2013, 5, 29, 0),
-                    datetime(2013, 5, 29, 0),
-                    datetime(2013, 5, 30, 0),
-                    datetime(2013, 6, 2, 0),
-                    datetime(2013, 6, 2, 0),
-                    datetime(2013, 6, 3, 0),
-                    datetime(2013, 6, 3, 0),
-                    datetime(2013, 6, 7, 0),
-                    datetime(2013, 6, 7, 0),
-                    datetime(2013, 6, 7, 0),
-                    datetime(2013, 6, 9, 0),
-                    datetime(2013, 6, 9, 0),
-                    datetime(2013, 6, 10, 0),
-                    datetime(2013, 6, 10, 0),
-                    datetime(2013, 6, 10, 0),
-                    datetime(2013, 6, 10, 0),
-                    datetime(2013, 6, 11, 0),
-                    datetime(2013, 6, 11, 0),
-                    datetime(2013, 6, 12, 0),
-                    datetime(2013, 6, 13, 0),
-                    datetime(2013, 6, 13, 0),
-                    datetime(2013, 6, 13, 0)])
+    dates = np.array([datetime(2013, 1, 11, 0, 1),
+                    datetime(2013, 1, 16, 0, 1),
+                    datetime(2013, 1, 18, 0, 1),
+                    datetime(2013, 1, 25, 0, 1),
+                    datetime(2013, 1, 29, 0, 1),
+                    datetime(2013, 2, 10, 0, 1),
+                    datetime(2013, 4, 10, 0, 1),
+                    datetime(2013, 4, 13, 0, 1),
+                    datetime(2013, 4, 23, 0, 1),
+                    datetime(2013, 4, 30, 0, 1),
+                    datetime(2013, 5, 7, 0, 1),
+                    datetime(2013, 5, 7, 0, 1),
+                    datetime(2013, 5, 12, 0, 1),
+                    datetime(2013, 5, 19, 0, 1),
+                    datetime(2013, 5, 24, 0, 1),
+                    datetime(2013, 5, 26, 0, 1),
+                    datetime(2013, 5, 26, 0, 1),
+                    datetime(2013, 5, 28, 0, 1),
+                    datetime(2013, 5, 29, 0, 1),
+                    datetime(2013, 5, 29, 0, 1),
+                    datetime(2013, 5, 30, 0, 1),
+                    datetime(2013, 6, 2, 0, 1),
+                    datetime(2013, 6, 2, 0, 1),
+                    datetime(2013, 6, 3, 0, 1),
+                    datetime(2013, 6, 3, 0, 1),
+                    datetime(2013, 6, 7, 0, 1),
+                    datetime(2013, 6, 7, 0, 1),
+                    datetime(2013, 6, 7, 0, 1),
+                    datetime(2013, 6, 9, 0, 1),
+                    datetime(2013, 6, 9, 0, 1),
+                    datetime(2013, 6, 10, 0, 1),
+                    datetime(2013, 6, 10, 0, 1),
+                    datetime(2013, 6, 10, 0, 1),
+                    datetime(2013, 6, 10, 0, 1),
+                    datetime(2013, 6, 11, 0, 1),
+                    datetime(2013, 6, 11, 0, 1),
+                    datetime(2013, 6, 12, 0, 1),
+                    datetime(2013, 6, 13, 0, 1),
+                    datetime(2013, 6, 13, 0, 1),
+                    datetime(2013, 6, 13, 0, 1)])
 
     return dates[test]

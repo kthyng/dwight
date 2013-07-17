@@ -45,12 +45,15 @@ for test in xrange(ntests):
 
     # Read in time initializations
     date = init.start_times(test)
-    # date = datetime(2009,12,2,0)
-
-    # pdb.set_trace()
 
     # Add information to name
     name = str(test) + '-' + str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2) + '-' + name
+    # date = datetime(2009,12,2,0)
+
+    datevec = date - timedelta(days=2)
+    for hour in range(0,24,4):
+        dat = datevec + timedelta(hours=hour)
+
 
     # If the particle trajectories have not been run, run them
     if not os.path.exists('tracks/' + name + '.nc'):
