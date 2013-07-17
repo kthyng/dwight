@@ -45,14 +45,15 @@ for test in xrange(ntests):
 
     # Read in time initializations
     date = init.start_times(test)
-
-    # Add information to name
-    name = str(test) + '-' + str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2) + str(date.hour).zfill(2) + '-' + name
     # date = datetime(2009,12,2,0)
 
     datevec = date - timedelta(days=2)
-    for hour in range(0,24,4):
+    for hour in range(0,48,4):
         dat = datevec + timedelta(hours=hour)
+
+        # Add information to name
+        name = str(test) + '-' + str(date.year) + '-' + str(date.month).zfill(2) \
+             + '-' + str(date.day).zfill(2) + '-' + str(date.hour).zfill(2) + '-' + name
 
 
         # If the particle trajectories have not been run, run them
