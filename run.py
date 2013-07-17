@@ -74,6 +74,16 @@ for test in xrange(ntests):
         if not os.path.exists('figures/' + name + 'histhexbin.png'):
             tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
 
+    tot = MFDataset('tracks/' + str(test) + '*')
+    lont = tot.variables['lonp'][:]
+    latt = tot.variables['latp'][:]
+    # 
+    name = test + '-overall'
+    if not os.path.exists('figures/' + name + 'tracks.png'):
+        tracpy.plotting.tracks(lont, latt, name, grid=grid)
+    if not os.path.exists('figures/' + name + 'histhexbin.png'):
+        tracpy.plotting.hist(lont, latt, name, grid=grid, which='hexbin',tind='other')
+
 # pdb.set_trace()
 # Make histogram of all final locations
 d = netCDF.MFDataset('tracks/*',aggdim='ntrac')
