@@ -78,8 +78,8 @@ for test in xrange(ntests):
 d = netCDF.MFDataset('tracks/*',aggdim='ntrac')
 name = 'overall'
 lonp = d.variables['lonp'][:]; latp = d.variables['latp'][:]
-tracpy.plotting.hist(lonp,latp, tind='vector', \
-                    name, grid=grid, which='hexbin')
+tracpy.plotting.hist(lonp,latp, name, tind='vector', \
+                    grid=grid, which='hexbin')
 tracpy.plotting.tracks(lonp, latp, name, grid=grid)
 
 # Compile tex document with figures in it
