@@ -52,8 +52,8 @@ for test in xrange(ntests):
         dat = datevec + timedelta(hours=hour)
 
         # Add information to name
-        name = str(test) + '-' + str(date.year) + '-' + str(date.month).zfill(2) \
-             + '-' + str(date.day).zfill(2) + '-' + str(date.hour).zfill(2) + '-' + name
+        name = str(test) + '-' + str(dat.year) + '-' + str(dat.month).zfill(2) \
+             + '-' + str(dat.day).zfill(2) + '-' + str(dat.hour).zfill(2) + '-' + name
 
 
         # If the particle trajectories have not been run, run them
