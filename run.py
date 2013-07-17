@@ -55,24 +55,24 @@ for test in xrange(ntests):
         dat = datevec + timedelta(hours=hour)
 
 
-    # If the particle trajectories have not been run, run them
-    if not os.path.exists('tracks/' + name + '.nc'):
-        # TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
-        lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, date, \
-                                        tseas, ah, av, lon0, lat0, \
-                                        z0, zpar, do3d, doturb, name)
+        # If the particle trajectories have not been run, run them
+        if not os.path.exists('tracks/' + name + '.nc'):
+            # TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
+            lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, date, \
+                                            tseas, ah, av, lon0, lat0, \
+                                            z0, zpar, do3d, doturb, name)
 
-    else: # if the files already exist, just read them in for plotting
-        d = netCDF.Dataset('tracks/' + name + '.nc')
-        lonp = d.variables['lonp'][:]
-        latp = d.variables['latp'][:]
+        else: # if the files already exist, just read them in for plotting
+            d = netCDF.Dataset('tracks/' + name + '.nc')
+            lonp = d.variables['lonp'][:]
+            latp = d.variables['latp'][:]
 
-    # If the particle trajectories have not been plotted, plot them
-    if not os.path.exists('figures/' + name + 'tracks.png'):
-        tracpy.plotting.tracks(lonp, latp, name, grid=grid)
-    if not os.path.exists('figures/' + name + 'histhexbin.png'):
-        tracpy.plotting.hist(lonp, latp, name, grid=grid, \
-                            which='hexbin')
+        # If the particle trajectories have not been plotted, plot them
+        if not os.path.exists('figures/' + name + 'tracks.png'):
+            tracpy.plotting.tracks(lonp, latp, name, grid=grid)
+        if not os.path.exists('figures/' + name + 'histhexbin.png'):
+            tracpy.plotting.hist(lonp, latp, name, grid=grid, \
+                                which='hexbin')
 
 # pdb.set_trace()
 # Make histogram of all final locations
