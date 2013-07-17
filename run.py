@@ -71,8 +71,7 @@ for test in xrange(ntests):
         if not os.path.exists('figures/' + name + 'tracks.png'):
             tracpy.plotting.tracks(lonp, latp, name, grid=grid)
         if not os.path.exists('figures/' + name + 'histhexbin.png'):
-            tracpy.plotting.hist(lonp, latp, name, grid=grid, \
-                                which='hexbin')
+            tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
 
 # pdb.set_trace()
 # Make histogram of all final locations
