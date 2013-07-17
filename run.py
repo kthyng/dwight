@@ -58,7 +58,7 @@ for test in xrange(ntests):
         # If the particle trajectories have not been run, run them
         if not os.path.exists('tracks/' + name + '.nc'):
             # TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
-            lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, date, \
+            lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, dat, \
                                             tseas, ah, av, lon0, lat0, \
                                             z0, zpar, do3d, doturb, name)
 
