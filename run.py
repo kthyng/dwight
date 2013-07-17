@@ -74,7 +74,7 @@ for test in xrange(ntests):
         if not os.path.exists('figures/' + name + 'histhexbin.png'):
             tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
 
-    tot = netCDF.MFDataset('tracks/' + str(test) + '*')
+    tot = netCDF.MFDataset('tracks/' + str(test) + '*',aggdim='ntrac')
     lont = tot.variables['lonp'][:]
     latt = tot.variables['latp'][:]
     # 
