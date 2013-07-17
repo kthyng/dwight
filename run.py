@@ -78,7 +78,7 @@ for test in xrange(ntests):
     lont = tot.variables['lonp'][:]
     latt = tot.variables['latp'][:]
     # 
-    name = test + '-overall'
+    name = str(test) + '-overall'
     if not os.path.exists('figures/' + name + 'tracks.png'):
         tracpy.plotting.tracks(lont, latt, name, grid=grid)
     if not os.path.exists('figures/' + name + 'histhexbin.png'):
