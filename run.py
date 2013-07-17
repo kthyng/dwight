@@ -41,7 +41,7 @@ latpsave = np.ones(40*900)*np.nan
 for test in xrange(ntests):
 
     # Read in location initializations
-    lon0, lat0, name = init.locations(test,grid)
+    lon0, lat0, testname = init.locations(test,grid)
 
     # Read in time initializations
     date = init.start_times(test)
@@ -53,7 +53,7 @@ for test in xrange(ntests):
 
         # Add information to name
         name = str(test) + '-' + str(dat.year) + '-' + str(dat.month).zfill(2) \
-             + '-' + str(dat.day).zfill(2) + '-' + str(dat.hour).zfill(2) + '-' + name
+             + '-' + str(dat.day).zfill(2) + '-' + str(dat.hour).zfill(2) + '-' + testname
 
 
         # If the particle trajectories have not been run, run them
