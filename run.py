@@ -47,7 +47,7 @@ for test in xrange(ntests):
     date = init.start_times(test)
 
     # Add information to name
-    name = str(test) + '-' + str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2) + '-' + name
+    name = str(test) + '-' + str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2) + str(date.hour).zfill(2) + '-' + name
     # date = datetime(2009,12,2,0)
 
     datevec = date - timedelta(days=2)
@@ -79,7 +79,7 @@ for test in xrange(ntests):
 d = netCDF.MFDataset('tracks/*',aggdim='ntrac')
 name = 'overall'
 lonp = d.variables['lonp'][:]; latp = d.variables['latp'][:]
-tracpy.plotting.hist(lonp,latp, \
+tracpy.plotting.hist(lonp,latp, tind='vector', \
                     name, grid=grid, which='hexbin')
 tracpy.plotting.tracks(lonp, latp, name, grid=grid)
 
