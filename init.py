@@ -101,12 +101,43 @@ def parameters():
     return loc,nsteps,ndays,ff,tseas,ah,av,z0,zpar,do3d,doturb,tout
 
 
-def locations(test,grid):
+def seed(lon, lat, dlon=.5, dlat=.5, N=30):
+    '''
+    Chose array of starting locations based on the location
+    the package was found (from locations()). A Gaussian 
+    distribution is used to distribute points around the 
+    find location.
+    Inputs:
+        lon, lat    Location where package was found
+        dlon, dlat  Distance in degrees in which to seed drifters.
+                    Default is 0.5 degrees.
+        N           Number of drifters in x and y. Default is 30.
+
+    Returns:
+        lon0, lat0  Points in lon/lat at which to seed drifters
+    '''
+
+    # Find 2D distribution of points around the package location
+    # the center is indicated using (lon, lat)
+    # The variance is given by [[.25,0],[0,.25]] indicates
+    #  a standard deviation away from the center of .5 degrees
+    #  or .5**2=.25
+    # There are N points in both x and y
+    dist = np.random.multivariate_normal((lon, lat), \
+                                    [[dlon**2,0],[0,dlat**2]], \
+                                    [N,N])
+    return dist[:,:,0], dist[:,:,1]
+
+def locations(test, grid, hour):
     '''
     Contains the locations and name information for the simulations.
 
     Inputs:
         test    Index of the test case we want to run
+        grid    grid dictionary as read in by tracpy.inout()
+        hour    Hour out of 48 to indicate where in time gaussian
+                this simulation is, which will affect the number
+                of drifters seeded
 
     Outputs:
         lon0    Drifter starting locations in x/zonal direction for test
@@ -244,8 +275,16 @@ def locations(test,grid):
 
     # Select out the lon/lat for test
     dlon = 0.5; dlat = 0.5 # delta degree distances for starting particles
-    lon0,lat0 = np.meshgrid(np.linspace(lon[test]-dlon, lon[test]+dlon,30), \
-                            np.linspace(lat[test]-dlat, lat[test]+dlat,30))
+
+    # Time Gaussian to set number of drifters used in (x,y)
+    H = np.range(48) # hours in 2 days
+    mu = 24 # 1 day into the 2 days of simulation starts is the mean
+    sigma = 16 # Standard deviation
+    N = 1/(sigma*sqrt(2*pi))*exp(-(H-mu)**2/(2*sigma**2))
+
+    lon0, lat0 = seed(lon[test], lat[test], dlon=dlon, dlat=dlat, N=N)
+    # lon0,lat0 = np.meshgrid(np.linspace(lon[test]-dlon, lon[test]+dlon,30), \
+    #                         np.linspace(lat[test]-dlat, lat[test]+dlat,30))
 
     # pdb.set_trace()
 
@@ -253,7 +292,6 @@ def locations(test,grid):
     lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
     return lon0, lat0, name[test]
-
 
 def start_times(test):
     '''

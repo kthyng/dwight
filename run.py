@@ -40,9 +40,6 @@ latpsave = np.ones(40*900)*np.nan
 # Loop through start locations and times for running different simulations
 for test in xrange(ntests):
 
-    # Read in location initializations
-    lon0, lat0, testname = init.locations(test,grid)
-
     # Read in time initializations
     date = init.start_times(test)
     # date = datetime(2009,12,2,0)
@@ -50,6 +47,9 @@ for test in xrange(ntests):
     datevec = date - timedelta(days=2)
     for hour in range(0,48,4):
         dat = datevec + timedelta(hours=hour)
+
+        # Read in location initializations
+        lon0, lat0, testname = init.locations(test,grid,hour)
 
         # Add information to name
         name = str(test) + '-' + str(dat.year) + '-' + str(dat.month).zfill(2) \
