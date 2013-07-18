@@ -1,0 +1,52 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\usepackage{subfigure}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=black, citecolor=black, urlcolor=blue]{hyperref} % to be able to hyperlink to figures, etc, in text
+\usepackage{natbib} % for better bibliography referencing. \citet without parentheses and \citep with them%
+%\usepackage{fancyvrb} % This is to be able to make boxes around verbatim code in figures
+% The following are to be able to go to smaller heading than subsubsection. Use "paragraph" and then "subparagraph"
+\setcounter{secnumdepth}{5} % to be able to use more section headings
+% here are the section headings in order to use in the text:
+%\section{} % level 1
+%\subsection{} % level 2
+%\subsubsection{} % level 3
+%\paragraph{} % level 4 - equivalent to subsubsubsection
+%\subparagraph{} % level 5
+%%%
+\setcounter{tocdepth}{5} % To include all of the section headings in the table of contents
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Drug Tracking on the TX-LA Shelf}
+\author{Kristen M. Thyng}
+%%\date{January 27, 2011}                                           % Activate to display a given date or no date
+
+% \input{macros}
+% \linenumbers % add line numbers
+
+% \begin{frontmatter}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Packaged narcotics occasionally wash onto the shore in the Gulf of Mexico. However, by June of this year, more packages have already been found along the U.S. shoreline (40) than were found in all of 2012 (37). \href{http://www.github.com/kthyng/tracpy}{Tracpy}, a particle tracking package, has been applied to currents predicted by a numerical model of the Texas-Louisiana shelf in order to help explain the origination of these packages.
+
+Some information about the packages was guessed based on observations by state trooper Mr. Corky Dwight. Due to the lack of UV damage, it was guessed that packages had been onshore when discovered for no more than a couple of days. Additionally, packages did not have indications of having been in the water long term. Because the packages have had different markings, it is believed they come from different drug cartels, and because the packages are wrapped in similar materials to those found on land, they were most likely accidentally dropped into the water (rather than having intentionally been floated toward land).
+
+\section{Methodology}
+
+A date and a geospatial coordinate was given for each discovered package. Because it is not known exactly how long a package had been on a beach before discovery, nor how long it floated around, Gaussian distributions were used in both time and space to start multiple simulations and many (but varying numbers of) drifters for every package found. 
+
+Simulations are run every 4 hours (chosen for the frequency of model output) for the two days before the day the package was found. A Gaussian distribution centered one day before the day the package was found is used to determine how many drifters are seeded for each simulation, in order to approximate the uncertainty involved. Then, for a given simulation, the amount of drifters is used in both x and y with a 2d Gaussian distribution for the drifters, centered around the package location. Many of the packages were found on or near the shore, in which case many of the drifters are masked out due to being on land.
+
+The drifters in each simulation are stepped backward in time for five days. Since we do not know when the packages were actually dropped, every drifter location is a potential origination point. Therefore, all of the locations of the drifters for all of the simulations started over two days are combined into a histogram for a given package. Overall, these tracks can be combined with tracks from all the other packages to create a histogram to help understand where the packages may originate.
+
+\end{document}
