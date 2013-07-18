@@ -1,3 +1,5 @@
+import matplotlib as mpl
+mpl.use("Agg") # set matplotlib to use the backend that does not require a windowing system
 import numpy as np
 import sys
 import os
