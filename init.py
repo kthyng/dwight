@@ -279,12 +279,14 @@ def locations(test, grid, hour):
     # Time Gaussian to set number of drifters used in (x,y)
     H = np.arange(48) # hours in 2 days
     mu = 24 # 1 day into the 2 days of simulation starts is the mean
-    sigma = 16 # Standard deviation
-    pdb.set_trace()
+    sigma = 16. # Standard deviation
+    # pdb.set_trace()
     N = 30*np.exp(-(H-mu)**2/(2*sigma**2))
+    # Choose N value for hour
+    Nh = np.floor(N[H==hour])
     # N = 1/(sigma*sqrt(2*pi))*exp(-(H-mu)**2/(2*sigma**2))
 
-    lon0, lat0 = seed(lon[test], lat[test], dlon=dlon, dlat=dlat, N=N)
+    lon0, lat0 = seed(lon[test], lat[test], dlon=dlon, dlat=dlat, N=Nh)
     # lon0,lat0 = np.meshgrid(np.linspace(lon[test]-dlon, lon[test]+dlon,30), \
     #                         np.linspace(lat[test]-dlat, lat[test]+dlat,30))
 
