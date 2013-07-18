@@ -277,7 +277,7 @@ def locations(test, grid, hour):
     dlon = 0.5; dlat = 0.5 # delta degree distances for starting particles
 
     # Time Gaussian to set number of drifters used in (x,y)
-    H = np.range(48) # hours in 2 days
+    H = np.arange(48) # hours in 2 days
     mu = 24 # 1 day into the 2 days of simulation starts is the mean
     sigma = 16 # Standard deviation
     N = 30*exp(-(H-mu)**2/(2*sigma**2))
