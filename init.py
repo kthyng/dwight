@@ -280,6 +280,7 @@ def locations(test, grid, hour):
     H = np.arange(48) # hours in 2 days
     mu = 24 # 1 day into the 2 days of simulation starts is the mean
     sigma = 16 # Standard deviation
+    pdb.set_trace()
     N = 30*np.exp(-(H-mu)**2/(2*sigma**2))
     # N = 1/(sigma*sqrt(2*pi))*exp(-(H-mu)**2/(2*sigma**2))
 
