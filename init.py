@@ -11,8 +11,10 @@ from datetime import datetime, timedelta
 from matplotlib.mlab import *
 import tracpy
 
+# Units for time conversion with netCDF.num2date and .date2num
+units = 'seconds since 1970-01-01'
 
-def parameters():
+def parameters(loc, grid, date, pack):
     '''
     Parameters for running numerical simulation.
     loc     Path to directory of grid and output files
@@ -59,46 +61,70 @@ def parameters():
     zp      z-locations (depths from mean sea level) for drifters
     t       time for drifter tracks
     '''
-
-    # Location of TXLA forecast model output file and then grid. 
-    loc = ['/pong/raid/kthyng/forecast/txla_oof_his_jan_jul_2013.nc', \
-            'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc']
-
+    
     # Initialize parameters
     nsteps = 5
-    ndays = 5 #16
+    ndays = 7
     ff = -1
-    # date = datetime(2009,11, 20, 0)
-
 
     # Time between outputs
-    # Dt = 14400. # in seconds (4 hours), nc.variables['dt'][:] 
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-    ah = 20. #100.
-    av = 1.e-5 # m^2/s, or try 5e-6
+    ah = 20.
+    av = 0
+
+    # Number of drifters
+    N = 1000
+
+    # Read in location initializations
+    lon0, lat0, packname = locations(pack, grid)
+    lon0 = np.ones(N, np.dtype(int))*lon0
+    lat0 = np.ones(N, np.dtype(int))*lat0
+
+    # Interpolate to get starting positions in grid space
+    xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+
+    # Initialize seed locations 
+    ia = np.ceil(xstart0).astype(int) #[253]#,525]
+    ja = np.ceil(ystart0).astype(int) #[57]#,40]
+
+    # Choose method for vertical placement of drifters
+    z0 = 's'
+    zpar = 29
+
+    do3d = 0
+    doturb = 1
+
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 1
+
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
 
     # Number of model outputs to use
     tout = np.int((ndays*(24*3600))/tseas)
 
-    ## Choose method for vertical placement of drifters
-    # Also update makefile accordingly. Choose the twodim flag for isoslice.
-    # See above for more notes, but do the following two lines for an isoslice
-    z0 = 's'  #'salt' #'s' #'z' #'salt' #'s' 
-    zpar = 29 #30 #29 #-10 #grid['km']-1 # 30 #grid['km']-1
-    # Do the following two for a 3d simulation
-    # z0 = np.ones(xstart0.shape)*-40 #  below the surface
-    # zpar = 'fromMSL' 
-    # pdb.set_trace()
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
 
-    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
-    do3d = 0
-    # turbulence/diffusion flag. doturb=0 means no turb/diffusion,
-    # doturb=1 means adding parameterized turbulence
-    # doturb=2 means adding diffusion on a circle
-    # doturb=3 means adding diffusion on an ellipse (anisodiffusion)
-    doturb = 2
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
+    nc.close()
 
-    return loc,nsteps,ndays,ff,tseas,ah,av,z0,zpar,do3d,doturb,tout
+    # Initial total volume transport as a scalar quantity to be conserved, I think
+    T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
+
+    # Initialize the arrays to save the transports on the grid in the loop.
+    # These arrays aggregate volume transport when a drifter enters or exits a grid cell
+    # These should start at zero since we don't know which way things will travel yet
+    U = np.ma.zeros(grid['xu'].shape,order='F')
+    V = np.ma.zeros(grid['xv'].shape,order='F')
+
+    # Add information to name
+    name = str(pack) + '-' + date.isoformat()[0:13] + '-' + packname
+
+    return nsteps, ndays, ff, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, dostream, T0, U, V, name
 
 
 def seed(lon, lat, dlon=.5, dlat=.5, N=30):
@@ -128,21 +154,18 @@ def seed(lon, lat, dlon=.5, dlat=.5, N=30):
                                     [N,N])
     return dist[:,:,0], dist[:,:,1]
 
-def locations(test, grid, hour):
+def locations(pack, grid):
     '''
     Contains the locations and name information for the simulations.
 
     Inputs:
-        test    Index of the test case we want to run
+        pack    Index of the pack case we want to run
         grid    grid dictionary as read in by tracpy.inout()
-        hour    Hour out of 48 to indicate where in time gaussian
-                this simulation is, which will affect the number
-                of drifters seeded
 
     Outputs:
-        lon0    Drifter starting locations in x/zonal direction for test
-        lat0    Drifter starting locations in y/meridional direction for test
-        name    Name of simulation to be used for netcdf file containing final tracks for test
+        lon0    Drifter starting locations in x/zonal direction for pack
+        lat0    Drifter starting locations in y/meridional direction for pack
+        name    Name of simulation to be used for netcdf file containing final tracks for pack
     '''
 
     # Name of locations packages were found
@@ -273,39 +296,70 @@ def locations(test, grid, hour):
                     93 + 21/60. + 38/3600.])
     lon = -lon # add in negative sign!
 
-    # Select out the lon/lat for test
-    dlon = 0.5; dlat = 0.5 # delta degree distances for starting particles
+    # Select location for this package
+    lon0 = lon[pack]; lat0 = lat[pack];
 
-    # Time Gaussian to set number of drifters used in (x,y)
-    H = np.arange(48) # hours in 2 days
-    mu = 24 # 1 day into the 2 days of simulation starts is the mean
-    sigma = 16. # Standard deviation
-    # pdb.set_trace()
-    N = 30*np.exp(-(H-mu)**2/(2*sigma**2))
-    # Choose N value for hour
-    Nh = np.floor(N[H==hour])
-    # N = 1/(sigma*sqrt(2*pi))*exp(-(H-mu)**2/(2*sigma**2))
+    # Interpolate to get starting positions in grid space
+    xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
 
-    lon0, lat0 = seed(lon[test], lat[test], dlon=dlon, dlat=dlat, N=Nh)
-    # lon0,lat0 = np.meshgrid(np.linspace(lon[test]-dlon, lon[test]+dlon,30), \
-    #                         np.linspace(lat[test]-dlat, lat[test]+dlat,30))
+    # Move all in the negative y direction, to avoid masked areas
+    ystart0 = ystart0 - 2
 
-    # pdb.set_trace()
+    # Recover lon,lat
+    lon0, lat0, _ = tracpy.tools.interpolate2d(xstart0, ystart0, \
+                                             grid, 'm_ij2ll')
 
-    # Eliminate points that are outside domain or in masked areas
-    lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
+    # # masked is 1 if that starting location is masked out
+    # masked = grid['mask'][ia.astype(int), ja.astype(int)]
 
-    return lon0, lat0, name[test]
+    # # Try starting drifters at a single location instead of spread around.
+    # # But, the found location might be masked out in the domain.
+    # # If it is, then move in the y direction toward the ocean
+    # for i in xrange(len(lat)):
+    #     if masked[i] == 1.:
+    #         # if masked, move 2 in y direction
+    #         ja[i] = ja[i] - 2.
 
-def start_times(test):
+    # # Recover corresponding lat/lons
+    # lon[masked.astype(int)], lat[masked.astype(int)], _ \
+    #     = tracpy.tools.interpolate2d(ia[masked.astype(int)] - .5, \
+    #                                  ja[masked.astype(int)] - .5, \
+    #                                  grid, 'm_ij2ll')
+
+
+    # # Select out the lon/lat for pack
+    # dlon = 0.5; dlat = 0.5 # delta degree distances for starting particles
+
+    # # Time Gaussian to set number of drifters used in (x,y)
+    # H = np.arange(48) # hours in 2 days
+    # mu = 24 # 1 day into the 2 days of simulation starts is the mean
+    # sigma = 16. # Standard deviation
+    # # pdb.set_trace()
+    # N = 30*np.exp(-(H-mu)**2/(2*sigma**2))
+    # # Choose N value for hour
+    # Nh = np.floor(N[H==hour])
+    # # N = 1/(sigma*sqrt(2*pi))*exp(-(H-mu)**2/(2*sigma**2))
+
+    # lon0, lat0 = seed(lon[pack], lat[pack], dlon=dlon, dlat=dlat, N=Nh)
+    # # lon0,lat0 = np.meshgrid(np.linspace(lon[pack]-dlon, lon[pack]+dlon,30), \
+    # #                         np.linspace(lat[pack]-dlat, lat[pack]+dlat,30))
+
+    # # pdb.set_trace()
+
+    # # Eliminate points that are outside domain or in masked areas
+    # lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
+
+    return lon0, lat0, name[pack]
+
+def start_times(pack):
     '''
     Contains the times for finding the locations.
 
     Inputs:
-        test    Index of the test case we want to run
+        pack    Index of the pack case we want to run
 
     Outputs:
-        date    Start date for test in datetime object
+        date    Start date for pack in datetime object
     '''
 
     dates = np.array([datetime(2013, 1, 11, 0, 1),
@@ -349,4 +403,4 @@ def start_times(test):
                     datetime(2013, 6, 13, 0, 1),
                     datetime(2013, 6, 13, 0, 1)])
 
-    return dates[test]
+    return dates[pack]
