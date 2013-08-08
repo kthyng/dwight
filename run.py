@@ -44,7 +44,7 @@ for pack in xrange(packs):
         # Read in parameter initialization
         nsteps, ndays, ff, tseas, ah, av, lon0, lat0, z0, zpar, \
             do3d, doturb, dostream, T0, U, V, name = init.parameters(loc, grid, date, pack)
-        pdb.set_trace()
+
         # If the particle trajectories have not been run, run them
         if not os.path.exists('tracks/' + name + '.nc'):
 
