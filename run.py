@@ -31,7 +31,8 @@ grid = tracpy.inout.readgrid(loc)
 for pack in xrange(packs):
 
     # Start simulations from the date the package was found
-    date = init.start_times(pack)
+    startdate = init.start_times(pack)
+    date = startdate
 
     name = date.isoformat()[0:13]
 
@@ -66,7 +67,7 @@ for pack in xrange(packs):
 
         # Increment by 4 hours for next loop
         nh = nh + 4
-        date = date + timedelta(hours=nh)
+        date = startdate + timedelta(hours=nh)
 
 # Compile tex document with figures in it
 # !pdflatex dwight.tex
